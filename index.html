@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signal Triangulation Tool</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Signal Triangulation Tool</h1>
+    <form id="input-form">
+      <table>
+        <thead>
+          <tr>
+            <th>Current Position (Lat,Lng)</th>
+            <th>Bearing (°)</th>
+            <th>Frequency (MHz)</th>
+            <th>Signal Max dB</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="input-rows">
+          <!-- Rows will be dynamically added here -->
+        </tbody>
+      </table>
+      <button type="button" id="add-row">Add Row</button>
+      <button type="button" id="process-data">Process Data</button>
+      <button type="button" id="reset-data">Reset</button>
+    </form>
+    <div id="map-container">
+      <div id="map"></div>
+    </div>
+    <div id="output">
+      <h2>Result</h2>
+      <p id="result-coords">Coordinates: N/A</p>
+    </div>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
