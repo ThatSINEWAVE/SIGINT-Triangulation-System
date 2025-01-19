@@ -1,43 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Signal Triangulation Tool</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGINT Triangulation System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Signal Triangulation Tool</h1>
-    <form id="input-form">
-      <table>
-        <thead>
-          <tr>
-            <th>Current Position (Lat,Lng)</th>
-            <th>Bearing (°)</th>
-            <th>Frequency (MHz)</th>
-            <th>Signal Max dB</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="input-rows">
-          <!-- Rows will be dynamically added here -->
-        </tbody>
-      </table>
-      <button type="button" id="add-row">Add Row</button>
-      <button type="button" id="process-data">Process Data</button>
-      <button type="button" id="reset-data">Reset</button>
-    </form>
-    <div id="map-container">
-      <div id="map"></div>
+    <div class="container">
+        <h1>
+            <div class="status-indicator status-active"></div>
+            SIGINT Triangulation System
+        </h1>
+
+        <div class="control-panel">
+            <button type="button" id="add-row" class="secondary">
+                + Add Signal Source
+            </button>
+            <button type="button" id="process-data">
+                <span class="loading" id="process-loading"></span>
+                Triangulate Position
+            </button>
+            <button type="button" id="reset-data" class="secondary">
+                Clear Data
+            </button>
+        </div>
+
+        <form id="input-form">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Signal Source Location</th>
+                        <th>Bearing (°)</th>
+                        <th>Frequency (MHz)</th>
+                        <th>Signal Strength (dB)</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="input-rows">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </form>
+
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+
+        <div id="output">
+            <h2>Target Location</h2>
+            <p id="result-coords">Coordinates: Awaiting triangulation...</p>
+            <div id="confidence-level" style="display: none;">
+                Confidence Level: <span id="confidence-value">High</span>
+            </div>
+        </div>
     </div>
-    <div id="output">
-      <h2>Result</h2>
-      <p id="result-coords">Coordinates: N/A</p>
-    </div>
-  </div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="script.js"></script>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
