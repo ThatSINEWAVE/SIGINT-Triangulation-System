@@ -6,10 +6,14 @@ const darkMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/
     maxZoom: 19
 });
 
+// Initialize map centered on Bucharest, Romania
+const BUCHAREST_COORDS = [44.4268, 26.1025]; // Coordinates for Bucharest
+const BUCHAREST_ZOOM = 12; // Appropriate zoom level for city view
+
 const map = L.map('map', {
     layers: [darkMap],
-    center: [0, 0],
-    zoom: 2
+    center: BUCHAREST_COORDS,
+    zoom: BUCHAREST_ZOOM
 });
 
 // Custom icon for intersection point
@@ -324,7 +328,8 @@ function resetData() {
         }
     });
 
-    map.setView([0, 0], 2);
+    // Reset to Bucharest view instead of world view
+    map.setView(BUCHAREST_COORDS, BUCHAREST_ZOOM);
     document.getElementById('result-coords').textContent = 'Coordinates: Awaiting triangulation...';
     document.getElementById('confidence-level').style.display = 'none';
 
