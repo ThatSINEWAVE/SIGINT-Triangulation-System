@@ -1,0 +1,6 @@
+Use these coords to test the tool.
+(This set of coords was chosen randomly, it points to a random spot in Bucharest, Romania)
+
+1. 44.4360,26.1304   145
+2. 44.4297,26.1453   283
+3. 44.4285,26.1329   31
