@@ -1,6 +1,10 @@
+<div align="center">
+
 # SIGINT Triangulation System
 
 The **SIGINT Triangulation System** is a web-based application designed to simulate and visualize signal triangulation using geospatial data. It enables users to input signal sources, bearings, frequencies, and signal strengths to calculate a target location using geodesic intersection methods.
+
+</div>
 
 ## Features
 
