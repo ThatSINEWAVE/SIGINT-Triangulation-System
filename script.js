@@ -337,10 +337,194 @@ function resetData() {
     addRow();
 }
 
+// Function to export map as image
+async function exportMapImage() {
+    try {
+        const loadingSpinner = document.getElementById('process-loading');
+        loadingSpinner.style.display = 'inline-block';
+
+        // Store current map state
+        const mapState = {
+            customMarkers: [],
+            lines: []
+        };
+
+        // Process existing layers
+        map.eachLayer(layer => {
+            // Handle custom markers
+            if (layer instanceof L.Marker && layer.getIcon() instanceof L.DivIcon) {
+                const pos = layer.getLatLng();
+                const popup = layer.getPopup();
+
+                // Remove the custom marker
+                map.removeLayer(layer);
+
+                // Add a standard marker
+                const standardMarker = L.marker(pos, {
+                    icon: L.icon({
+                        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+                        shadowSize: [41, 41],
+                        shadowAnchor: [12, 41]
+                    })
+                });
+
+                if (popup) {
+                    standardMarker.bindPopup(popup);
+                }
+
+                mapState.customMarkers.push({
+                    original: layer,
+                    temporary: standardMarker
+                });
+
+                standardMarker.addTo(map);
+            }
+            // Handle lines
+            else if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                // Store line properties
+                mapState.lines.push({
+                    latlngs: layer.getLatLngs(),
+                    options: {
+                        color: layer.options.color,
+                        weight: layer.options.weight,
+                        opacity: layer.options.opacity
+                    }
+                });
+            }
+        });
+
+        // Wait for all tiles to load
+        await new Promise(resolve => {
+            let tilesLoading = false;
+            map.eachLayer(layer => {
+                if (layer instanceof L.TileLayer) {
+                    if (!layer.isLoading()) {
+                        resolve();
+                    } else {
+                        tilesLoading = true;
+                        layer.once('load', resolve);
+                    }
+                }
+            });
+            if (!tilesLoading) {
+                resolve();
+            }
+        });
+
+        // Use leafletImage with error handling and timeout
+        await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                reject(new Error('Map export timed out'));
+            }, 10000); // 10 second timeout
+
+            leafletImage(map, function(err, canvas) {
+                clearTimeout(timeout);
+
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                // Draw lines on the canvas
+                const ctx = canvas.getContext('2d');
+
+                // Redraw the lines on the canvas
+                mapState.lines.forEach(lineData => {
+                    const points = lineData.latlngs.map(latlng =>
+                        map.latLngToContainerPoint(latlng)
+                    );
+
+                    ctx.beginPath();
+                    ctx.moveTo(points[0].x, points[0].y);
+                    ctx.lineTo(points[1].x, points[1].y);
+                    ctx.strokeStyle = lineData.options.color;
+                    ctx.lineWidth = lineData.options.weight;
+                    ctx.globalAlpha = lineData.options.opacity;
+                    ctx.stroke();
+                });
+
+                // Convert canvas to blob and download
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = `triangulation-map-${new Date().toISOString().slice(0,10)}.png`;
+                    link.href = url;
+                    link.click();
+
+                    // Cleanup
+                    URL.revokeObjectURL(url);
+                    resolve();
+                }, 'image/png');
+            });
+        });
+
+        // Restore custom markers
+        mapState.customMarkers.forEach(marker => {
+            map.removeLayer(marker.temporary);
+            marker.original.addTo(map);
+        });
+
+    } catch (error) {
+        console.error('Error exporting map:', error);
+        alert('Failed to export map image. Please try again.');
+    } finally {
+        loadingSpinner.style.display = 'none';
+    }
+}
+
+// Function to export data as TXT
+function exportDataAsTxt() {
+    try {
+        const rows = document.querySelectorAll('#input-rows tr');
+        const resultCoords = document.getElementById('result-coords').textContent;
+        const confidenceLevel = document.getElementById('confidence-value').textContent;
+
+        let txtContent = "SIGINT TRIANGULATION REPORT\n";
+        txtContent += "===========================\n\n";
+        txtContent += `Date: ${new Date().toLocaleString()}\n\n`;
+
+        txtContent += "INPUT DATA:\n";
+        txtContent += "-----------\n";
+
+        rows.forEach((row, index) => {
+            const inputs = row.querySelectorAll('input');
+            txtContent += `\nSignal Source ${index + 1}:\n`;
+            txtContent += `Location: ${inputs[0].value}\n`;
+            txtContent += `Bearing: ${inputs[1].value}°\n`;
+            txtContent += `Frequency: ${inputs[2].value} MHz\n`;
+            txtContent += `Signal Strength: ${inputs[3].value} dB\n`;
+        });
+
+        txtContent += "\nRESULTS:\n";
+        txtContent += "--------\n";
+        txtContent += `${resultCoords}\n`;
+        txtContent += `Confidence Level: ${confidenceLevel}\n`;
+
+        // Create and trigger download
+        const blob = new Blob([txtContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = `triangulation-report-${new Date().toISOString().slice(0,10)}.txt`;
+        link.href = url;
+        link.click();
+
+        // Cleanup
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Error exporting data:', error);
+        alert('Failed to export data. Please try again.');
+    }
+}
+
 // Add event listeners
 document.getElementById('add-row').addEventListener('click', addRow);
 document.getElementById('process-data').addEventListener('click', processData);
 document.getElementById('reset-data').addEventListener('click', resetData);
+document.getElementById('export-image').addEventListener('click', exportMapImage);
+document.getElementById('export-txt').addEventListener('click', exportDataAsTxt);
 
 // Initialize with one row
 addRow();
