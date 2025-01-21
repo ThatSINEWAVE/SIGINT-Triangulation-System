@@ -1,71 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SIGINT Triangulation System</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>
-            <div class="status-indicator status-active"></div>
-            SIGINT Triangulation System
-        </h1>
-
-        <div class="control-panel">
-            <button type="button" id="add-row" class="secondary">
-                + Add Signal Source
-            </button>
-            <button type="button" id="process-data">
-                <span class="loading" id="process-loading"></span>
-                Triangulate Position
-            </button>
-            <button type="button" id="reset-data" class="secondary">
-                Clear Data
-            </button>
-            <button type="button" id="export-image" class="secondary">
-                Export Map
-            </button>
-            <button type="button" id="export-txt" class="secondary">
-                Export Report
-            </button>
+      <h1>SIGINT Triangulation System</h1>
+      <div class="control-panel">
+        <button type="button" id="add-row" class="secondary"> + Add Signal Source </button>
+        <button type="button" id="process-data">
+          <span class="loading" id="process-loading"></span> Triangulate Position </button>
+        <button type="button" id="reset-data" class="secondary"> Clear Data </button>
+        <button type="button" id="export-image" class="secondary"> Export Map </button>
+        <button type="button" id="export-txt" class="secondary"> Export Report </button>
+      </div>
+      <form id="input-form">
+        <table>
+          <thead>
+            <tr>
+              <th>Signal Source Location</th>
+              <th>Bearing (°)</th>
+              <th>Frequency (MHz)</th>
+              <th>Signal Strength (dB)</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="input-rows">
+            <!-- Rows will be dynamically added here -->
+          </tbody>
+        </table>
+      </form>
+      <div id="map-container">
+        <div id="map"></div>
+      </div>
+      <div id="output">
+        <h2>Target Location</h2>
+        <p id="result-coords">Coordinates: Awaiting triangulation...</p>
+        <div id="confidence-level" style="display: none;"> Confidence Level: <span id="confidence-value">High</span>
         </div>
-
-        <form id="input-form">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Signal Source Location</th>
-                        <th>Bearing (°)</th>
-                        <th>Frequency (MHz)</th>
-                        <th>Signal Strength (dB)</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="input-rows">
-                    <!-- Rows will be dynamically added here -->
-                </tbody>
-            </table>
-        </form>
-
-        <div id="map-container">
-            <div id="map"></div>
-        </div>
-
-        <div id="output">
-            <h2>Target Location</h2>
-            <p id="result-coords">Coordinates: Awaiting triangulation...</p>
-            <div id="confidence-level" style="display: none;">
-                Confidence Level: <span id="confidence-value">High</span>
-            </div>
-        </div>
+      </div>
     </div>
-
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
