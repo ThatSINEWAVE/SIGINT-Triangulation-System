@@ -118,20 +118,23 @@ function calculateIntersection(data) {
 
         // Add marker for measurement point
         L.marker(d.position, {
-            icon: L.divIcon({
-                className: 'line-label',
-                html: `<div style="color: ${lineColor}; font-weight: bold;">${index + 1}</div>`,
+                icon: L.divIcon({
+                    className: 'line-label',
+                    html: `<div style="color: ${lineColor}; font-weight: bold;">${index + 1}</div>`,
+                })
             })
-        })
-        .addTo(map)
-        .bindPopup(`
+            .addTo(map)
+            .bindPopup(`
             <b>Signal Source ${index + 1}</b><br>
             Frequency: ${d.frequency} MHz<br>
             Signal Strength: ${d.signal} dB<br>
             Bearing: ${d.bearing}°
         `);
 
-        return { start: d.position, bearing: d.bearing };
+        return {
+            start: d.position,
+            bearing: d.bearing
+        };
     });
 
     const intersection = calculateGeodesicIntersection(lines);
@@ -140,7 +143,9 @@ function calculateIntersection(data) {
         bounds.extend(intersection);
 
         // Add marker for the intersection point
-        L.marker(intersection, { icon: targetIcon })
+        L.marker(intersection, {
+                icon: targetIcon
+            })
             .addTo(map)
             .bindPopup('Calculated Target Location')
             .openPopup();
@@ -226,8 +231,8 @@ function geodesicIntersection([lat1, lng1], brng1, [lat2, lng2], brng2) {
     const Δλ = λ2 - λ1;
 
     const δ12 = 2 * Math.asin(Math.sqrt(
-        Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) * Math.sin(Δλ/2)
+        Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+        Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2)
     ));
 
     if (Math.abs(δ12) < 1e-10) return null;
@@ -310,10 +315,10 @@ function calculateDistance(point1, point2) {
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
 }
 
@@ -504,7 +509,9 @@ function exportDataAsTxt() {
         txtContent += `Confidence Level: ${confidenceLevel}\n`;
 
         // Create and trigger download
-        const blob = new Blob([txtContent], { type: 'text/plain' });
+        const blob = new Blob([txtContent], {
+            type: 'text/plain'
+        });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.download = `triangulation-report-${new Date().toISOString().slice(0,10)}.txt`;
